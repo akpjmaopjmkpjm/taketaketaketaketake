@@ -1,0 +1,10 @@
+{
+  "Role": "GlueServiceRole-POC",
+  "Command": {
+    "Name": "glueetl",
+    "ScriptLocation": "s3://gluegluetest20260515-test/job_script.py"
+  },
+  "DefaultArguments": {
+    "--job-language": "python"
+  }
+}
