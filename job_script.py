@@ -10,7 +10,7 @@ spark = glueContext.spark_session
 
 print("=== Glue Job Script Started ===")
 
-# 単純な DataFrame を作ってログに出す
+# 単純な DataFrame を作成
 df = spark.createDataFrame(
     [
         ("na-", 1),
@@ -21,4 +21,10 @@ df = spark.createDataFrame(
 
 df.show()
 
+# ★★★ ここで Glue の S3 に出力する ★★★
+output_path = "s3://20260616-resi/output/"
+
+df.write.mode("overwrite").json(output_path)
+
+print(f"=== Data written to {output_path} ===")
 print("=== Glue Job Script Finished ===")
