@@ -1,11 +1,6 @@
 version: 0.0
 os: windows
-
-files:
-  - source: /
-    destination: C:\deploy
 hooks:
-  AfterInstall:
-    - location: scripts\deploy.ps1
+  ApplicationStart:
+    - location: s3_transfer.ps1  
       timeout: 300
-      runas: Administrator
