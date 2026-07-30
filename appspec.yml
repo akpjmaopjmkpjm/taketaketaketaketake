@@ -1,5 +1,9 @@
 version: 0.0
-os: windows
+os: windows # 💡 WindowsなのでこれでOKです
+files:
+  - source: \ # 💡 zipの中身すべて（ルート）を対象にする（Windowsはバックスラッシュ）
+    destination: C:\deploy # 💡 実際にファイルを置きたいEC2上の「フォルダのフルパス」を指定します
+
 hooks:
   ApplicationStart:
     - location: s3_transfer.ps1  
