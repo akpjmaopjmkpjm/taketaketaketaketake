@@ -20,7 +20,7 @@ try {
 }
 catch {
     # 🔴【最重要】エラー内容を文字としてログに絶対残す記述
-    Write-Output "🚨【重大エラー発生】スクリプト内部で以下の問題が発生しました："
+    Write-Output "🚨【重大エラー発生】スクリプト内部で以下の問題が発生しましたa："
     Write-Output $_.Exception.Message
     Write-Output $_.ScriptStackTrace
     exit 1
