@@ -5,7 +5,12 @@ files:
     destination: C:\deploy
 file_exists_behavior: OVERWRITE
 hooks:
+  # 🔴【重要】過去のスクリプトがなくてエラーになっても、無視して進む設定です
+  ApplicationStop:
+    - location: s3_transfer.ps1 # 何か適当な値を指定しておく必要があります
+      timeout: 30
+    allow_lifecycle_event_errors: true
+
   ApplicationStart:
-    # 🔴【修正】locationにはスクリプトの相対パスだけを書きます
     - location: s3_transfer.ps1
       timeout: 300
