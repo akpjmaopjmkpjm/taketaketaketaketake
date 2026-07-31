@@ -5,16 +5,13 @@ files:
     destination: C:\deploy
 file_exists_behavior: OVERWRITE
 hooks:
-  # 💡 まだファイルがないフェーズなので、中身を空（何もしない）にします
-  BeforeInstall: []
-  
-  # 💡 古いスクリプトがなくてもエラーを無視して進めます
+  # 💡 前回の古いファイルがなくてもエラーを無視して確実に進める設定
   ApplicationStop:
     - location: s3_transfer.ps1
       timeout: 30
-    allow_lifecycle_event_errors: true
+      allow_lifecycle_event_errors: true
 
-  # 💡 ここで最新のスクリプトを安全に実行しますru
+  # 💡 サーバーに最新の s3_transfer.ps1 が届いた後、ここで安全に実行する
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
