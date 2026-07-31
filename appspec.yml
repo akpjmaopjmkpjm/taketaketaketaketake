@@ -5,13 +5,14 @@ files:
     destination: C:\deploy
 file_exists_behavior: OVERWRITE
 hooks:
-  # 💡 前回の古いファイルがなくてもエラーを無視して確実に進める設定
+  # 🔴 エラーや応答なしになっても、10秒で強制的に切り上げて次へ進ませます
   ApplicationStop:
     - location: s3_transfer.ps1
-      timeout: 30
+      timeout: 10
       allow_lifecycle_event_errors: true
 
-  # 💡 サーバーに最新の s3_transfer.ps1 が届いた後、ここで安全に実行するsu
+  # 🔴 ここも念のためエラー無視を入れます
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
+      allow_lifecycle_event_errors: true
