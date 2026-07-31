@@ -14,7 +14,7 @@ hooks:
       timeout: 30
     allow_lifecycle_event_errors: true
 
-  # 💡 ここで最新のスクリプトを安全に実行します
+  # 💡 ここで最新のスクリプトを安全に実行しますru
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
