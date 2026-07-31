@@ -2,9 +2,10 @@ version: 0.0
 os: windows
 files:
   - source: \
-    destination: C:\deploy  # 💡（※以前のcurrent_appなど、指定しているフォルダに合わせてください）
-    overwrite: true        # 🔴【重要】この行を追加して強制上書きを許可します
+    destination: C:\deploy
 hooks:
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
+# 🔴【重要】これと同じインデント（左詰め）で最下部に追加してください
+file_exists_behavior: OVERWRITE
