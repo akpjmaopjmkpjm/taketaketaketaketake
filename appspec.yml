@@ -5,12 +5,15 @@ files:
     destination: C:\deploy
 file_exists_behavior: OVERWRITE
 hooks:
-  # 🔴【重要】過去のスクリプトがなくてエラーになっても、無視して進む設定です
   ApplicationStop:
-    - location: s3_transfer.ps1 # 何か適当な値を指定しておく必要があります
+    - location: s3_transfer.ps1
       timeout: 30
-    allow_lifecycle_event_errors: true
-
+  BeforeInstall:
+    - location: s3_transfer.ps1
+      timeout: 30
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
+
+# 🔴 全てのフックで「エラーが起きても無視して進む」設定を、インデントなしのルート（一番左）に書きます
+allow_lifecycle_event_errors: true
