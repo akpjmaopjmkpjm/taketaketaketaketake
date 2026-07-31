@@ -11,7 +11,7 @@ hooks:
       timeout: 10
       allow_lifecycle_event_errors: true
 
-  # 🔴 ここも念のためエラー無視を入れます
+  # 🔴 ここも念のためエラー無視を入れますuu
   ApplicationStart:
     - location: s3_transfer.ps1
       timeout: 300
