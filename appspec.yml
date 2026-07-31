@@ -3,9 +3,10 @@ os: windows
 files:
   - source: \
     destination: C:\deploy
+file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
-    - location: s3_transfer.ps1
+    # 🔴【重要】locationを以下のように書き換えます
+    - location: powershell.exe
+      args: -ExecutionPolicy Bypass -File C:\deploy\s3_transfer.ps1
       timeout: 300
-# 🔴【重要】これと同じインデント（左詰め）で最下部に追加してください
-file_exists_behavior: OVERWRITE
