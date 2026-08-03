@@ -1,0 +1,9 @@
+version: 0.0
+Resources:
+  - myLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "lambda_codedeploy" # 💡 AWS上の実際のLambda関数名
+        Alias: "live"             # 💡 トラフィックを切り替えるエイリアス名
+        CurrentVersion: "1"       # 💡 Actions側で自動書き換えするためこのままでOK
+        TargetVersion: "2"        # 💡 Actions側で自動書き換えするためこのままでOK

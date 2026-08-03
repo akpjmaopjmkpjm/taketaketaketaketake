@@ -1,0 +1,51 @@
+name: Deploy Lambda via CodeDeploy
+
+on:
+  push:
+    branches:
+      - main # 💡 トリガーにするブランチ名
+
+permissions:
+  id-token: write # 💡 OIDC認証を使うために必須の権限です
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. リポジトリのコード（script.pyなど）を取得
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. AWS への認証（アクセスキーなしの OIDC 方式）
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # 🟢 前回のEC2デプロイでも使用した、GitHub連携用のIAMロールのARNを指定します
+          role-to-assume: arn:aws:iam::568601941391:role/YOUR_GITHUB_OIDC_ROLE_NAME
+          aws-region: ap-northeast-1 # 💡 東京リージョン
+
+      # 3. script.py を zip に固めて Lambda の新バージョンを発行
+      - name: Upload Code to Lambda and Publish Version
+        id: publish_lambda
+        run: |
+          zip -j function.zip script.py
+          
+          VERSION=$(aws lambda update-function-code \
+            --function-name lambda_codedeploy \
+            --zip-file fileb://function.zip \
+            --publish \
+            --query 'Version' \
+            --output text)
+          
+          echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
+
+      # 4. CodeDeployを実行（裏側で appspec.yml を自動的に読み込んでトラフィックを切り替えます）
+      - name: Deploy to AWS CodeDeploy
+        uses: aws-actions/aws-codedeploy-deploy@v2
+        with:
+          application-name: YOUR_CODEDEPLOY_APPLICATION_NAME # 💡 AWS側のCodeDeployアプリケーション名
+          deployment-group-name: YOUR_DEPLOYMENT_GROUP_NAME   # 💡 AWS側のデプロイグループ名
+          lambda-function-name: lambda_codedeploy
+          lambda-function-alias: live                        # 💡 Lambdaのエイリアス名
+          lambda-function-latest-version: ${{ env.NEW_VERSION }}
