@@ -42,7 +42,7 @@ jobs:
 
       # 4. CodeDeployを実行（裏側で appspec.yml を自動的に読み込んでトラフィックを切り替えます）
       - name: Deploy to AWS CodeDeploy
-        uses: aws-actions/aws-codedeploy-deploy@v2
+        uses: aws-actions/aws-code-deploy-deploy@v2
         with:
           application-name: YOUR_CODEDEPLOY_APPLICATION_NAME # 💡 AWS側のCodeDeployアプリケーション名
           deployment-group-name: YOUR_DEPLOYMENT_GROUP_NAME   # 💡 AWS側のデプロイグループ名
