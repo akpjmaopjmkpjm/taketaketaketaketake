@@ -24,9 +24,6 @@ jobs:
           # 🟢 教えていただいた本物のロール名を指定しました
           role-to-assume: arn:aws:iam::568601941391:role/20260615deploy
           aws-region: ap-northeast-1
-          # 💡 新しいリポジトリからでもこのロールを借りられるようにする設定です
-          audience: https://github.com/taketaketaketaketake
-
       # 3. script.py を zip に固めて Lambda の新バージョンを発行
       - name: Upload Code to Lambda and Publish Version
         id: publish_lambda
