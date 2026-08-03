@@ -21,9 +21,11 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # 🟢 前回使用した GitHub 連携用の IAM ロール名を YOUR_... の部分に入れてください
-          role-to-assume: arn:aws:iam::568601941391:role/YOUR_GITHUB_OIDC_ROLE_NAME
+          # 🟢 教えていただいた本物のロール名を指定しました
+          role-to-assume: arn:aws:iam::568601941391:role/20260615deploy
           aws-region: ap-northeast-1
+          # 💡 新しいリポジトリからでもこのロールを借りられるようにする設定です
+          audience: https://github.com/taketaketaketaketake
 
       # 3. script.py を zip に固めて Lambda の新バージョンを発行
       - name: Upload Code to Lambda and Publish Version
@@ -40,14 +42,14 @@ jobs:
           
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 4. AWS CLIでCodeDeployのデプロイを直接実行する（エラー回避版）
+      # 4. AWS CLIでCodeDeployのデプロイを直接実行する
       - name: Deploy to AWS CodeDeploy via CLI
         run: |
           # appspec.yml の TargetVersion を最新のバージョン番号に自動書き換えします
           sed -i "s/TargetVersion: .*/TargetVersion: \"${{ env.NEW_VERSION }}\"/" appspec.yml
           
-          # 💡 前回と同じ「アプリケーション名」と「デプロイグループ名」をここに直接書いてください！
+          # 🟢 教えていただいたアプリケーション名とデプロイグループ名を指定しました
           aws deploy create-deployment \
-            --application-name 前回と同じアプリケーション名 \
-            --deployment-group-name 前回と同じデプロイグループ名 \
+            --application-name deploy-serverless \
+            --deployment-group-name deploy-group \
             --revision '{"revisionType": "AppSpecContent", "appSpecContent": {"content": "'"$(cat appspec.yml | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')"'"}}'
