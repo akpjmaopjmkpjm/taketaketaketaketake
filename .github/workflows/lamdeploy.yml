@@ -21,9 +21,9 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # 🟢 前回のEC2デプロイでも使用した、GitHub連携用のIAMロールのARNを指定します
+          # 🟢 前回使用した GitHub 連携用の IAM ロール名を YOUR_... の部分に入れてください
           role-to-assume: arn:aws:iam::568601941391:role/YOUR_GITHUB_OIDC_ROLE_NAME
-          aws-region: ap-northeast-1 # 💡 東京リージョン
+          aws-region: ap-northeast-1
 
       # 3. script.py を zip に固めて Lambda の新バージョンを発行
       - name: Upload Code to Lambda and Publish Version
@@ -40,12 +40,14 @@ jobs:
           
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 4. CodeDeployを実行（裏側で appspec.yml を自動的に読み込んでトラフィックを切り替えます）
-      - name: Deploy to AWS CodeDeploy
-        uses: aws-actions/aws-code-deploy-deploy@v2
-        with:
-          application-name: YOUR_CODEDEPLOY_APPLICATION_NAME # 💡 AWS側のCodeDeployアプリケーション名
-          deployment-group-name: YOUR_DEPLOYMENT_GROUP_NAME   # 💡 AWS側のデプロイグループ名
-          lambda-function-name: lambda_codedeploy
-          lambda-function-alias: live                        # 💡 Lambdaのエイリアス名
-          lambda-function-latest-version: ${{ env.NEW_VERSION }}
+      # 4. AWS CLIでCodeDeployのデプロイを直接実行する（エラー回避版）
+      - name: Deploy to AWS CodeDeploy via CLI
+        run: |
+          # appspec.yml の TargetVersion を最新のバージョン番号に自動書き換えします
+          sed -i "s/TargetVersion: .*/TargetVersion: \"${{ env.NEW_VERSION }}\"/" appspec.yml
+          
+          # 💡 前回と同じ「アプリケーション名」と「デプロイグループ名」をここに直接書いてください！
+          aws deploy create-deployment \
+            --application-name 前回と同じアプリケーション名 \
+            --deployment-group-name 前回と同じデプロイグループ名 \
+            --revision '{"revisionType": "AppSpecContent", "appSpecContent": {"content": "'"$(cat appspec.yml | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')"'"}}'
