@@ -6,7 +6,7 @@ on:
       - main # 💡 トリガーにするブランチ名
 
 permissions:
-  id-token: write # 💡 OIDC認証を使うために必須の権限です
+  id-token: write # 💡 OIDC認証を使うために必須の権限ですsusu
   contents: read
 
 jobs:
@@ -42,11 +42,14 @@ jobs:
       # 4. AWS CLIでCodeDeployのデプロイを直接実行する
       - name: Deploy to AWS CodeDeploy via CLI
         run: |
-          # appspec.yml の TargetVersion を最新のバージョン番号に自動書き換えします
+          # appspec.yml の TargetVersion を最新バージョンに自動更新
           sed -i "s/TargetVersion: .*/TargetVersion: \"${{ env.NEW_VERSION }}\"/" appspec.yml
           
-          # 🟢 教えていただいたアプリケーション名とデプロイグループ名を指定しました
+          # appspec.yml の内容を安全に改行文字（\n）へ変換して JSON を作成
+          CONTENT=$(jq -sR . appspec.yml)
+          
+          # AWS CLI でデプロイを実行
           aws deploy create-deployment \
             --application-name deploy-serverless \
             --deployment-group-name deploy-group \
-            --revision '{"revisionType": "AppSpecContent", "appSpecContent": {"content": "'"$(cat appspec.yml | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')"'"}}'
+            --revision "{\"revisionType\": \"AppSpecContent\", \"appSpecContent\": {\"content\": $CONTENT}}"

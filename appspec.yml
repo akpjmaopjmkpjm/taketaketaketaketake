@@ -1,21 +1,8 @@
 version: 0.0
-Resources:
-  - myLambdaFunction:
+Resources: myLambdaFunction:
       Type: AWS::Lambda::Function
       Properties:
-        Name: "lambda_codedeploy" # 💡 AWS上の実際のLambda関数名
-        Alias: "live"             # 💡 トラフィックを切り替えるエイリアス名
-        CurrentVersion: "1"       # 💡 Actions側で自動書き換えするためこのままでOK
-        TargetVersion: "2"        # 💡 Actions側で自動書き換えするためこのままでOK
-=======
-os: windows
-files:
-  - source: \
-    destination: C:\deploy
-file_exists_behavior: OVERWRITE
-hooks:
-  ApplicationStop: []
-  ApplicationStart:
-    - location: s3_transfer.ps1
-      timeout: 300
->>>>>>> 2d641427faa53952cda8c83ec1924a8ea3a1db27
+        Name: "lambda_codedeploy"
+        Alias: "live"
+        CurrentVersion: "1"
+        TargetVersion: "2"
