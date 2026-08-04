@@ -21,7 +21,7 @@ df = spark.createDataFrame(
 
 df.show()
 
-# ★★★ ここで Glue の S3 に出力する ★★★
+# ★★★ ここで Glue の S3 に出力する ★★★------------------------------出来るのか？
 output_path = "s3://20260616-resi/output/"
 
 df.write.mode("overwrite").json(output_path)
