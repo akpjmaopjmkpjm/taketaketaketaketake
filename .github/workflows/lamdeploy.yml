@@ -6,7 +6,7 @@ on:
       - main # 💡 トリガーにするブランチ名
 
 permissions:
-  id-token: write # 💡 OIDC認証を使うために必須の権限です
+  id-token: write # 💡 OIDC認証を使うために必須の権限ですsusu
   contents: read
 
 jobs:
