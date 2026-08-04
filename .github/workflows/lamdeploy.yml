@@ -6,7 +6,7 @@ on:
       - main # 💡 トリガーにするブランチ名
 
 permissions:
-  id-token: write # 💡 OIDC認証を使うために必須の権限ですsusu
+  id-token: write # 💡 OIDC認証を使うために必須の権限です
   contents: read
 
 jobs:
@@ -21,9 +21,9 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # 🟢 教えていただいた本物のロール名を指定しました
           role-to-assume: arn:aws:iam::568601941391:role/20260615deploy
           aws-region: ap-northeast-1
+
       # 3. script.py を zip に固めて Lambda の新バージョンを発行
       - name: Upload Code to Lambda and Publish Version
         id: publish_lambda
@@ -45,11 +45,11 @@ jobs:
           # appspec.yml の TargetVersion を最新バージョンに自動更新
           sed -i "s/TargetVersion: .*/TargetVersion: \"${{ env.NEW_VERSION }}\"/" appspec.yml
           
-          # appspec.yml の内容を安全に改行文字（\n）へ変換して JSON を作成
+          # appspec.yml の内容を改行文字付きの JSON 文字列へ変換
           CONTENT=$(jq -sR . appspec.yml)
           
-          # AWS CLI でデプロイを実行
+          # 🟢 教えていただいた Lambda 用の新しいアプリケーション名とデプロイグループ名を指定
           aws deploy create-deployment \
-            --application-name deploy-serverless \
-            --deployment-group-name deploy-group \
+            --application-name lamlam-test-20260427 \
+            --deployment-group-name LamLamtest-20260507-2 \
             --revision "{\"revisionType\": \"AppSpecContent\", \"appSpecContent\": {\"content\": $CONTENT}}"
