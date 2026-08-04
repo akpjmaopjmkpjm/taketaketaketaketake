@@ -39,16 +39,23 @@ jobs:
           
           echo "NEW_VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 4. AWS CLIでCodeDeployのデプロイを直接実行する
+     # 4. AWS CLIでCodeDeployのデプロイを直接実行する
       - name: Deploy to AWS CodeDeploy via CLI
         run: |
-          # appspec.yml の TargetVersion を最新バージョンに自動更新
-          sed -i "s/TargetVersion: .*/TargetVersion: \"${{ env.NEW_VERSION }}\"/" appspec.yml
+          # Pythonを使って appspec.yml の TargetVersion を安全かつ確実に書き換えます
+          python3 -c "
+          import re
+          with open('appspec.yml', 'r') as f:
+              content = f.read()
+          content = re.sub(r'TargetVersion: .*', 'TargetVersion: \"${{ env.NEW_VERSION }}\"', content)
+          with open('appspec.yml', 'w') as f:
+              f.write(content)
+          "
           
           # appspec.yml の内容を改行文字付きの JSON 文字列へ変換
           CONTENT=$(jq -sR . appspec.yml)
           
-          # 🟢 教えていただいた Lambda 用の新しいアプリケーション名とデプロイグループ名を指定
+          # AWS CLI でデプロイを実行
           aws deploy create-deployment \
             --application-name lamlam-test-20260427 \
             --deployment-group-name LamLamtest-20260507-2 \
