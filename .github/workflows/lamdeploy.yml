@@ -29,4 +29,4 @@ jobs:
       - name: Upload Zip to S3
         run: |
           zip -j function.zip script.py
-          aws s3 cp function.zip s3:lambda-resive/function.zip
+          aws s3 cp function.zip s3://lambda-resive/function.zip
