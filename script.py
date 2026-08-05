@@ -6,5 +6,5 @@ def lambda_handler(event, context):
     
     return {
         'statusCode': 200,
-        'body': json.dumps('おはようございます。')
+        'body': json.dumps('こんにちは。今日はいい天気です')
     }
