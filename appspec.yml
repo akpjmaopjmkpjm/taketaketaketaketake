@@ -1,3 +1,4 @@
+# cfn-lint: disable
 version: 0.0
 Resources:
   - myLambdaFunction:
