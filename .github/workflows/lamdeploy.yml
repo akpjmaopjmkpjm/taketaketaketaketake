@@ -6,7 +6,7 @@ on:
       - main # 💡 トリガーにするブランチ名
 
 permissions:
-  id-token: write # 💡 OIDC認証を使うために必須の権限ですsusu
+  id-token: write # 💡 OIDC認証を使うために必須の権限
   contents: read
 
 jobs:
@@ -24,47 +24,9 @@ jobs:
           role-to-assume: arn:aws:iam::568601941391:role/20260615deploy
           aws-region: ap-northeast-1
 
-      # 3. script.py を zip 化して Lambda にアップロード（新バージョンを発行）
-      - name: Upload Code to Lambda and Publish Version
-        id: publish_lambda
+      # 3. script.py を zip 化して S3 バケットにアップロード
+      # ※ lambda-resive が監視している S3 バケット名に書き換えてください
+      - name: Upload Zip to S3
         run: |
           zip -j function.zip script.py
-          
-          # 新しく作られたバージョン番号を取得（例: 8）
-          NEW_VER=$(aws lambda update-function-code \
-            --function-name lambda_codedeploy \
-            --zip-file fileb://function.zip \
-            --publish \
-            --query 'Version' \
-            --output text)
-          
-          echo "NEW_VERSION=$NEW_VER" >> $GITHUB_ENV
-
-      # 4. AWS CLIで CodeDeploy を実行する前に appspec.yml を動的更新
-      - name: Deploy to AWS CodeDeploy via CLI
-        run: |
-          # AWSから、現在 prod エイリアスが指している旧バージョン番号を取得（例: 7）
-          CURRENT_VER=$(aws lambda get-alias \
-            --function-name lambda_codedeploy \
-            --name prod \
-            --query 'FunctionVersion' \
-            --output text)
-          
-          # appspec.yml の CurrentVersion と TargetVersion を自動で最新値に置換
-          python3 -c "
-          import re
-          with open('appspec.yml', 'r') as f:
-              content = f.read()
-          content = re.sub(r'CurrentVersion: .*', f'CurrentVersion: \"${CURRENT_VER}\"', content)
-          content = re.sub(r'TargetVersion: .*', 'TargetVersion: \"${{ env.NEW_VERSION }}\"', content)
-          with open('appspec.yml', 'w') as f:
-              f.write(content)
-          "
-          
-          # appspec.yml を JSON 化して CodeDeploy へ送信
-          CONTENT=$(jq -sR . appspec.yml)
-          
-          aws deploy create-deployment \
-            --application-name lamlam-test-20260427 \
-            --deployment-group-name LamLamtest-20260507-2 \
-            --revision "{\"revisionType\": \"AppSpecContent\", \"appSpecContent\": {\"content\": $CONTENT}}"
+          aws s3 cp function.zip s3:lambda-resive/function.zip
