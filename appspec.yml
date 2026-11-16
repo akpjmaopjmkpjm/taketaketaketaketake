@@ -1,11 +1,10 @@
+#cfn-lint: disable
 version: 0.0
-os: windows
-files:
-  - source: \
-    destination: C:\deploy
-file_exists_behavior: OVERWRITE
-hooks:
-  ApplicationStop: []
-  ApplicationStart:
-    - location: s3_transfer.ps1
-      timeout: 300
+Resources:
+  - myLambdaFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "lambda_codedeploy"
+        Alias: "prod"
+        CurrentVersion: "7"
+        TargetVersion: "6"
