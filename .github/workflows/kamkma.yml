@@ -3,7 +3,7 @@ name: Deploy Lambda via CodeDeploy
 on:
   push:
     branches:
-      - maindevelopMainte
+      - developMainte
 permissions:
   id-token: write
   contents: read
