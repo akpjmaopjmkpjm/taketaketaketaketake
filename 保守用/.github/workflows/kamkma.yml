@@ -1,0 +1,27 @@
+name: Deploy Lambda via CodeDeploy
+
+on:
+  push:
+    branches:
+      - maindevelopMainte
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::568601941391:role/20260615deploy
+          aws-region: ap-northeast-1
+
+      - name: Upload Zip to S3
+        run: |
+          zip -j function.zip *.py appspec.yml
+          aws s3 cp function.zip s3://lambda-resive/function.zip
